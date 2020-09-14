@@ -57,7 +57,7 @@ E utilizar o keygen para gerar um .pem:
 ssh-keygen -m PEM
 ```
 
-Mais ainda recomenda-se manter o acesso as chaves restrito:
+Mais ainda, recomenda-se manter o acesso às chaves restrito:
 
 ```
 chmod 400 my-key-pair.pem
@@ -84,15 +84,15 @@ Acessar o _bastion host_ com agent forwarding:
 ssh -A obiwan@bastion-dns-name
 ```
 
-Desta forma, as chaves são carregadas _na memória_ do host e, assim, é possível conectar utilizando:
+Desta forma, as chaves são carregadas _na memória_ do bastion e, assim, é possível se conectar a instância privada utilizando:
 
 ```sh
 ssh ubuntu@private-instance-ip
 ```
 
-### Modo 2: Jump
+### Modo 2: ProxyJump
 
-A partir o SSH versão 7.3 é possível fazer um ProxyJump e acessar a máquina privada em um comando apenas:
+A partir o SSH versão 7.3 é possível fazer um _ProxyJump_ e acessar a máquina privada em um comando apenas:
 
 ```
 ssh -J obiwan@bastion-dns-name ubuntu@private-instance-ip
@@ -109,7 +109,7 @@ module "bastion" {
   is_lb_private              = false
   bastion_host_key_pair      = "name-to-adm-aws-key"
   create_dns_record          = true
-  hosted_zone_id             = "aws_route53_zone.subdomain_zone.zone_id"
+  hosted_zone_id             = "aws_route53_zone.domain_zone.zone_id"
   bastion_record_name        = "bastion.${local.env}.${local.domain}"
   bastion_iam_policy_name    = "${local.env}BastionHostPolicy"
   elb_subnets                = [aws_subnet.public_subnet1.id, aws_subnet.public_subnet2.id]
@@ -124,25 +124,24 @@ module "bastion" {
     }
   )
 }
-
 ```
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| auto_scaling_group_subnets | Lista de subnets onde o ASG irá construír as instâncias | list | - | yes |
-| allow_ssh_commands | Allows the SSH user to execute one-off commands. Pass 'True' to enable. Warning: These commands are not logged and increase the vulnerability of the system. Use at your own discretion. | string | "" | no |
+| auto_scaling_group_subnets | Lista de subnets onde o ASG irá construir as instâncias | list | - | yes |
+| allow_ssh_commands | Quando 'True' permite a execução os comandos passados via SSH. Este comandos não são gravados. Use com descrição | string | "" | no |
 | bastion_host_key_pair | Key pair utilizada na contrução do bastion | string | - | yes |
 | bastion_instance_count | Número de bastions à serem criados na VPC | string | `1` | no |
-| bastion_launch_configuration_name | ASG launch configuration name | string | `lc` | no |
-| bastion_ami | AMI utilizada pelo bastion. Se não informado, a Amazon2 AMI mais recente é utilizada. | string | `` | no |
+| bastion_launch_template_name | Nome do template de launch configuration utilizado também pelo ASG | string | `lc` | no |
+| bastion_ami | AMI utilizada pelo bastion. Se não informado, a Amazon2 AMI mais recente é utilizada | string | `` | no |
 | bastion_record_name | DNS record para o bastion | string | `` | no |
-| bastion_host_policy_name | IAM Policy criado para o bastion instance role | string | `BastionHost` | no |
+| bastion_iam_policy_name | IAM Policy criado para o bastion ter acesso ao bucket | string | `BastionHost` | no |
 | bucket_name | Nome do bucket onde os logs serão armazenados | string | - | yes |
 | bucket_force_destroy | Força remoção de bucket e seus objetos no _terraform destroy_ | string | false | no |
 | bucket_versioning | Habilita versionamento no bucket | string | true | no |
 | cidrs | Lista de CIDRs que podem acessar o bastion. Default: 0.0.0.0/0 | list | `<list>` | no |
-| create_dns_record | Quando true cria um dns record para o bastion (LB). Se true 'hosted_zone_id' e 'bastion_record_name' se tornam obrigatórios | integer | - | yes |
+| create_dns_record | Quando true cria um DNS record para o bastion (LB). Se true 'hosted_zone_id' e 'bastion_record_name' se tornam obrigatórios | integer | - | yes |
 | elb_subnets | Lista de subnets onde o NLB será construído | list | - | yes |
 | extra_user_data_content | Script adicional para passar para o bastion | string | `" "` | no |
 | hosted_zone_id | Nome da hosted zone onde o DNS name do bastion deve ser registrado | string | `` | no |
