@@ -73,9 +73,9 @@ resource "aws_s3_bucket" "bucket" {
 }
 
 resource "aws_s3_bucket_object" "bucket_public_keys_readme" {
-  bucket  = aws_s3_bucket.bucket.id
-  key     = "public-keys/README.txt"
-  content = "Coloque aqui as public-keys dos usuários que desejar dar acesso via bastion host."
+  bucket     = aws_s3_bucket.bucket.id
+  key        = "public-keys/README.txt"
+  content    = "Coloque aqui as public-keys dos usuários que desejar dar acesso via bastion host."
   kms_key_id = aws_kms_key.key.arn
 }
 
@@ -116,13 +116,13 @@ resource "aws_security_group" "private_instances_security_group" {
 }
 
 resource "aws_security_group_rule" "ingress_instances" {
-  type        = "ingress"
-  from_port   = var.private_ssh_port
-  to_port     = var.private_ssh_port
-  protocol    = "TCP"
+  type      = "ingress"
+  from_port = var.private_ssh_port
+  to_port   = var.private_ssh_port
+  protocol  = "TCP"
 
   source_security_group_id = aws_security_group.bastion_host_security_group.id
-  security_group_id = aws_security_group.private_instances_security_group.id
+  security_group_id        = aws_security_group.private_instances_security_group.id
 }
 
 data "aws_iam_policy_document" "assume_policy_document" {

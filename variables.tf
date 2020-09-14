@@ -23,7 +23,7 @@ variable "region" {}
 variable "cidrs" {
   description = "Lista de CIDRs que podem acessar o bastion"
   type        = list(string)
-  default = ["0.0.0.0/0"]
+  default     = ["0.0.0.0/0"]
 }
 
 variable "is_lb_private" {

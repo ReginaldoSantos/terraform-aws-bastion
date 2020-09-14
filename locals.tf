@@ -1,6 +1,6 @@
 locals {
   tags_asg_format = null_resource.tags_as_list_of_maps.*.triggers
-  name_prefix = var.bastion_launch_template_name
+  name_prefix     = var.bastion_launch_template_name
 }
 
 resource "null_resource" "tags_as_list_of_maps" {
