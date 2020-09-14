@@ -108,7 +108,7 @@ resource "aws_security_group_rule" "egress_bastion" {
 }
 
 resource "aws_security_group" "private_instances_security_group" {
-  description = "Pode ser utilizado pelas instâncias permitir acesso SSH somente pelo bastion"
+  description = "Pode ser utilizado pelas instancias permitir acesso SSH somente pelo bastion"
   name        = "${local.name_prefix}-priv-instances"
   vpc_id      = var.vpc_id
 
