@@ -80,9 +80,13 @@ resource "aws_s3_bucket_object" "bucket_public_keys_readme" {
 }
 
 resource "aws_security_group" "bastion_host_security_group" {
+  name_prefix = "${local.name_prefix}-host-"
   description = "Habilita acesso SSH externo ao bastion host"
-  name        = "${local.name_prefix}-host"
   vpc_id      = var.vpc_id
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tags = merge(var.tags)
 }
