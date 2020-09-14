@@ -1,3 +1,7 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# Bastion Host: https://aws.amazon.com/blogs/security/how-to-record-ssh-sessions-established-through-a-bastion-host/
+# ---------------------------------------------------------------------------------------------------------------------
+
 data "template_file" "user_data" {
   template = file("${path.module}/user_data.sh")
 
@@ -71,12 +75,12 @@ resource "aws_s3_bucket" "bucket" {
 resource "aws_s3_bucket_object" "bucket_public_keys_readme" {
   bucket  = aws_s3_bucket.bucket.id
   key     = "public-keys/README.txt"
-  content = "Drop here the ssh public keys of the instances you want to control"
+  content = "Coloque aqui as public-keys dos usuários que desejar dar acesso via bastion host."
   kms_key_id = aws_kms_key.key.arn
 }
 
 resource "aws_security_group" "bastion_host_security_group" {
-  description = "Enable SSH access to the bastion host from external via SSH port"
+  description = "Habilita acesso SSH externo ao bastion host"
   name        = "${local.name_prefix}-host"
   vpc_id      = var.vpc_id
 
@@ -84,7 +88,6 @@ resource "aws_security_group" "bastion_host_security_group" {
 }
 
 resource "aws_security_group_rule" "ingress_bastion" {
-  description = "Incoming traffic to bastion"
   type        = "ingress"
   from_port   = var.public_ssh_port
   to_port     = var.public_ssh_port
@@ -95,7 +98,6 @@ resource "aws_security_group_rule" "ingress_bastion" {
 }
 
 resource "aws_security_group_rule" "egress_bastion" {
-  description = "Outgoing traffic from bastion to instances"
   type        = "egress"
   from_port   = "0"
   to_port     = "65535"
@@ -106,7 +108,7 @@ resource "aws_security_group_rule" "egress_bastion" {
 }
 
 resource "aws_security_group" "private_instances_security_group" {
-  description = "Enable SSH access to the Private instances from the bastion via SSH port"
+  description = "Pode ser utilizado pelas instâncias permitir acesso SSH somente pelo bastion"
   name        = "${local.name_prefix}-priv-instances"
   vpc_id      = var.vpc_id
 
@@ -114,14 +116,12 @@ resource "aws_security_group" "private_instances_security_group" {
 }
 
 resource "aws_security_group_rule" "ingress_instances" {
-  description = "Incoming traffic from bastion"
   type        = "ingress"
   from_port   = var.private_ssh_port
   to_port     = var.private_ssh_port
   protocol    = "TCP"
 
   source_security_group_id = aws_security_group.bastion_host_security_group.id
-
   security_group_id = aws_security_group.private_instances_security_group.id
 }
 
@@ -283,7 +283,7 @@ resource "aws_launch_template" "bastion_launch_template" {
 }
 
 resource "aws_autoscaling_group" "bastion_auto_scaling_group" {
-  name_prefix = "ASG-${local.name_prefix}"
+  name_prefix = "asg-${local.name_prefix}-"
   launch_template {
     id      = aws_launch_template.bastion_launch_template.id
     version = "$Latest"
@@ -307,7 +307,7 @@ resource "aws_autoscaling_group" "bastion_auto_scaling_group" {
   ]
 
   tags = concat(
-    list(map("key", "Name", "value", "ASG-${local.name_prefix}", "propagate_at_launch", true)),
+    list(map("key", "Name", "value", "asg-${local.name_prefix}", "propagate_at_launch", true)),
     local.tags_asg_format
   )
 
