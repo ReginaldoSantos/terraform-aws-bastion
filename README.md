@@ -19,7 +19,7 @@ Para criar novos usuários com acesso privilegiado em suas instâncias da VPC em
 Assim o arquivo <s3 bucket>/log/users-changes.txt tiver uma entrada referente ao usuário, significa que o _bastion host_ já criou o novo usuário:
 
 ```
-2020-09-14 00-35-03: Criando conta de usuário para obiwan (public-keys/obiwan.pub)
+2020-09-14 00-35-03: Criada conta para obiwan (public-keys/obiwan.pub)
 ```
 
 Assim, basta conectar: 

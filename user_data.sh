@@ -134,7 +134,7 @@ while read line; do
       mkdir -m 700 /home/$USER_NAME/.ssh && \
       chown $USER_NAME:$USER_NAME /home/$USER_NAME/.ssh && \
       echo "$line" >> ~/keys_installed && \
-      echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`: Creating user account for $USER_NAME ($line)" >> $LOG_FILE
+      echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`: Criada conta para $USER_NAME ($line)" >> $LOG_FILE
     fi
 
     # Copy the public key from S3, if an user account was created from this key
@@ -157,7 +157,7 @@ if [ -f ~/keys_installed ]; then
   comm -13 ~/keys_retrieved_from_s3 ~/keys_installed | sed "s/\t//g" > ~/keys_to_remove
   while read line; do
     USER_NAME="`get_user_name "$line"`"
-    echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`: Removing user account for $USER_NAME ($line)" >> $LOG_FILE
+    echo "`date --date="today" "+%Y-%m-%d %H-%M-%S"`: Removida conta de $USER_NAME ($line)" >> $LOG_FILE
     /usr/sbin/userdel -r -f $USER_NAME
   done < ~/keys_to_remove
   comm -3 ~/keys_installed ~/keys_to_remove | sed "s/\t//g" > ~/tmp && mv ~/tmp ~/keys_installed
